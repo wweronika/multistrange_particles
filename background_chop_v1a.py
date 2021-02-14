@@ -90,7 +90,13 @@ def Action():
     
     num = int(input('Which column? '))
     
-    chopped_RealXiData = RealXiData[:,num][1156:17884]
+    chopped_RealXiData = RealXiData[:,num][1156:17884] #cutting off end values of real Xi data to make length of realXi data 4*len(MCXiData)
+                                                       # this will make it easier to adjust the real Xi data to have same length as MCXiData array
+            
+    # Goal is to get average of every 4 data points in RealXi data, make a new array with these avgs,
+    # and then get the difference of these averages with the MCXi data 
+    # because can only calculate difference when lengths of both lists are the same         
+    
     reduced_RealXi = []
     n = 0
     while n < 4182:
