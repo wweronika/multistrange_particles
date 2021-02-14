@@ -119,7 +119,7 @@ def Action():
     plt.show()
     
 if breaker == 'n':
-    m =  1000
+    m =  0
     while m<1000:
         Action()
         m+=1
