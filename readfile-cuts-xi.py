@@ -37,7 +37,6 @@ def dcav0pv_correct(columns):
 def doverm_correct(columns):
   return columns[13] < 12
 
-
 def nsigpion_correct(columns):
   return columns[14] > -2 and columns[14] < 3
 

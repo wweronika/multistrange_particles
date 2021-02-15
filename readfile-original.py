@@ -1,7 +1,7 @@
 # import numpy as np
 import matplotlib.pyplot as plt
 
-f = open('real-xi-data.file', 'r')
+f = open('real-Omega-data.file', 'r')
 
 ximass, v0mass = [], []
 for line in f:
@@ -16,7 +16,7 @@ plt.hist(ximass, bins = 100, range = [1.2,1.6])
 plt.title('Effective mass plot for Xi')
 plt.xlabel('Effective $\Lambda \pi^{-}$ mass (GeV/c$^{2}$)')
 plt.ylabel('No. of Events / 4 MeV/c$^{2}$')
-plt.savefig('ximass.pdf')
+plt.savefig('omegamass.pdf')
 plt.show()
 #plt.hist2d(ximass, v0mass, bins = 100)
 #plt.show()
