@@ -49,7 +49,7 @@ for line in f_in_2:
     ximass.append(columns[1])
 
 # (nHits, bins, patches)=plt.hist(dist,bins=np.arange(-10,10,0.2),density=True,histtype="step")
-nHits, bins, patches = plt.hist(ximass, bins = 500, range = [1.30,1.34])
+nHits, bins, patches = plt.hist(ximass, bins = 300, range = [1.29, 1.35])
 
 # bins is the data file so using bins[:-1] it's just selecting the whole dataset
 x = bins[:-1] 

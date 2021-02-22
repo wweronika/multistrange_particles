@@ -6,13 +6,13 @@ def ximass_correct(columns):
   return columns[1] > 1.31 and columns[1] < 1.34
 
 def vmass_correct(columns):
-    return columns[2] > 1.1 and columns[2] < 1.2
+    return columns[2] > 0.9 and columns[2] < 1.4
 
 def v0radius_correct(columns):
-  return columns[3] < 40
+  return columns[3] < 45
 
 def casradius_correct(columns):
-  return columns[4] < 30
+  return columns[4] < 35
 
 def cascos_correct(columns):
   return columns[5] > 0.98
@@ -21,37 +21,37 @@ def v0cos_correct(columns):
   return columns[6] > 0.98
 
 def dcaneg_correct(columns):
-  return columns[7] < 20
+  return columns[7] < 25
 
 def dcapos_correct(columns):
-  return columns[8] < 4
+  return columns[8] < 6
 
 def dcabach_correct(columns):
-  return columns[9] < 5
+  return columns[9] < 6
 
 def dcav0_correct(columns):
-  return columns[10] < 2
+  return columns[10] < 2.5
 
 def dcacas_correct(columns):
-  return columns[11] < 2
+  return columns[11] < 2.5
 
 def dcav0pv_correct(columns):
-  return columns[12] < 2.5
+  return columns[12] < 3
 
 def doverm_correct(columns):
-  return columns[13] < 12
+  return columns[13] < 20
 
 def nsigpion_correct(columns):
   return columns[14] > -2 and columns[14] < 3
 
 def nsigproton_correct(columns):
-  return columns[15] > -2 and columns[15] < 4
+  return columns[15] > -3 and columns[15] < 5
 
 def nsigbach_correct(columns):
-  return columns[16] > -2 and columns[16] < 3
+  return columns[16] > -3 and columns[16] < 4
 
 
-parameter_checks = [ximass_correct, vmass_correct, v0radius_correct, casradius_correct, cascos_correct, v0cos_correct, dcaneg_correct, dcapos_correct, dcabach_correct, dcav0_correct, dcacas_correct, dcav0pv_correct, doverm_correct, nsigpion_correct, nsigproton_correct, nsigbach_correct]
+parameter_checks = [vmass_correct, v0radius_correct, casradius_correct, cascos_correct, v0cos_correct, dcaneg_correct, dcapos_correct, dcabach_correct, dcav0_correct, dcacas_correct, dcav0pv_correct, doverm_correct, nsigpion_correct, nsigproton_correct, nsigbach_correct]
 
 
 
@@ -93,7 +93,7 @@ for line in f_in_2:
     columns = [float(s) for s in line.split()]
     ximass.append(columns[1])
 
-_, bins, _ = plt.hist(ximass, bins = 1000, range = [1.30,1.34])
+_, bins, _ = plt.hist(ximass, bins = 200, range = [1.25,1.38])
 
 mu, sigma = stats.norm.fit(ximass)
 best_fit_line = stats.norm.pdf(bins, mu, sigma)
