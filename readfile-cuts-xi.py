@@ -1,5 +1,9 @@
 # import numpy as np
 import matplotlib.pyplot as plt
+from scipy import stats
+
+def ximass_correct(columns):
+  return columns[1] > 1.31 and columns[1] < 1.34
 
 def vmass_correct(columns):
     return columns[2] > 1.1 and columns[2] < 1.2
@@ -47,7 +51,7 @@ def nsigbach_correct(columns):
   return columns[16] > -2 and columns[16] < 3
 
 
-parameter_checks = [vmass_correct, v0radius_correct, casradius_correct, cascos_correct, v0cos_correct, dcaneg_correct, dcapos_correct, dcabach_correct, dcav0_correct, dcacas_correct, dcav0pv_correct, doverm_correct, nsigpion_correct, nsigproton_correct, nsigbach_correct]
+parameter_checks = [ximass_correct, vmass_correct, v0radius_correct, casradius_correct, cascos_correct, v0cos_correct, dcaneg_correct, dcapos_correct, dcabach_correct, dcav0_correct, dcacas_correct, dcav0pv_correct, doverm_correct, nsigpion_correct, nsigproton_correct, nsigbach_correct]
 
 
 
@@ -71,7 +75,7 @@ ximass, v0mass = [], []
 for line in f_in:
     line = line.strip()
     columns = [float(s) for s in line.split()]
-    print(columns)
+    # print(columns)
     if all_correct(columns):
       write_row(f_out, columns)
 
@@ -89,11 +93,16 @@ for line in f_in_2:
     columns = [float(s) for s in line.split()]
     ximass.append(columns[1])
 
-plt.hist(ximass, bins = 100, range = [1.2,1.6])
+_, bins, _ = plt.hist(ximass, bins = 1000, range = [1.30,1.34])
+
+mu, sigma = stats.norm.fit(ximass)
+best_fit_line = stats.norm.pdf(bins, mu, sigma)
+plt.plot(bins, best_fit_line)
+
 plt.title('Effective mass plot for Xi')
 plt.xlabel('Effective $\Lambda \pi^{-}$ mass (GeV/c$^{2}$)')
 plt.ylabel('No. of Events / 4 MeV/c$^{2}$')
-plt.savefig('ximass.pdf')
+# plt.savefig('ximass.pdf')
 plt.show()
 #plt.hist2d(ximass, v0mass, bins = 100)
 #plt.show()

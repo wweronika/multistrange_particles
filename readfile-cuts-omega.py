@@ -5,13 +5,16 @@ def omegamass_low(columns):
     return columns[1] < 1.65
 
 def ximass_far(columns):
-  return not (columns[2] > 1.31 and columns[2] < 1.34)
+  return not(columns[2] > 1.31 and columns[2] < 1.32) 
+
+def probably_not_xi(columns):
+  return not (omegamass_low(columns) and not nsigproton_correct(columns))
 
 def ximass_correct(columns):
-    return columns[2] > 1.25 and columns[2] < 1.5
+    return not((columns[2] > 1.31 and columns[2] < 1.33) and not nsigproton_correct(columns))
 
 def vmass_correct(columns):
-  return columns[3] > 1.11 and columns[3] < 1.2
+  return columns[3] > 1.05 and columns[3] < 1.13
 
 def v0radius_correct(columns):
   return columns[4] < 50
@@ -48,16 +51,16 @@ def doverm_correct(columns):
 
 
 def nsigpion_correct(columns):
-  return columns[15] > -1.5 and columns[15] < 2.5
+  return columns[15] > -2 and columns[15] < 3
 
 def nsigproton_correct(columns):
-  return columns[16] > -1.5 and columns[16] < 3
+  return columns[16] > -2 and columns[16] < 4
 
 def nsigbach_correct(columns):
-  return columns[17] < 16
+  return columns[17] < 20
 
 
-parameter_checks = [ximass_far, vmass_correct, v0radius_correct, casradius_correct, cascos_correct, v0cos_correct, dcaneg_correct, dcapos_correct, dcabach_correct, dcav0_correct, dcacas_correct, dcav0pv_correct, doverm_correct, nsigpion_correct, nsigproton_correct, nsigbach_correct]
+parameter_checks = [vmass_correct, v0radius_correct, casradius_correct, cascos_correct, v0cos_correct, dcaneg_correct, dcapos_correct, dcabach_correct, dcav0_correct, dcacas_correct, dcav0pv_correct, doverm_correct, nsigpion_correct, nsigproton_correct, nsigbach_correct]
 parameter_checks_2 = [omegamass_low]
 
 
@@ -78,7 +81,7 @@ def write_row(f, columns):
 def show_all_plots(data):
   for i in range(18):
     plt.hist(data[i], bins = 100, range = [min(data[i]), max(data[i])])
-    plt.title('Effective mass plot for Xi')
+    plt.title('Effective mass plot for Omega')
     plt.xlabel('Effective $\Lambda \pi^{-}$ mass (GeV/c$^{2}$)')
     plt.ylabel('No. of Events / 4 MeV/c$^{2}$')
     # plt.savefig('ximass.pdf')
@@ -88,7 +91,7 @@ def show_all_plots(data):
 
 def show_plot(property):
   plt.hist(property, bins = 100, range = [min(property), max(property)])
-  plt.title('Effective mass plot for Xi')
+  plt.title('Effective mass plot for Omega')
   plt.xlabel('Effective $\Lambda \pi^{-}$ mass (GeV/c$^{2}$)')
   plt.ylabel('No. of Events / 4 MeV/c$^{2}$')
   # plt.savefig('ximass.pdf')
@@ -124,9 +127,9 @@ for line in f_in_2:
     line = line.strip()
     columns = [float(s) for s in line.split()]
     omegamass.append(columns[1])
-    print(columns[1])
+    print(columns[2])
     for i in range(18):
       data[i].append(columns[i])
 
-show_plot(omegamass)
+show_all_plots(data)
 
