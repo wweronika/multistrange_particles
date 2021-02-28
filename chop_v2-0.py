@@ -14,6 +14,7 @@ import scipy.integrate as integrate
 from tkinter import *
 root = Tk()
 root.withdraw()
+plt.ion()
 
 ### Change axis Names
 Names = ["icand","Ximass","Vmass","V0radius","Casradius","Cascos","V0cos","DCAneg","DCApos", "DCAbach", "DCAV0", "DCAcas","DCAV0PV", "dOverM",
@@ -135,10 +136,9 @@ def GplusPoly(t,a,mu,sigma,A,B,C,D):
     return gauss(t,a,mu,sigma)+D*poly2D(t,A,B,C)
 ########################################
 
-def gPlusPolyFit():
-    RealXiDataClone = RealXiData
-    (nHits, bins, patches) = plt.hist(RealXiDataClone[:,num], bins=500, label= 'Real Xi', range = [1.28,1.55])
-    
+def gPlusPolyFit(dataset):
+    # (nHits, bins, patches) = plt.hist(dataset[:,num], bins=500, label= 'Real Xi', range = [1.28,1.55])
+    nHits, bins = np.histogram(dataset[:, num], bins=500)
     # bins is the data file so using bins[:-1] it's just selecting the whole dataset
     x = bins[:-1] 
     
@@ -157,14 +157,14 @@ def gPlusPolyFit():
     #NOTICE also that the bounds are very important here. Vague limits too much could lead to a bad fitting.
     
     popt,pcov = curve_fit(GplusPoly, x, y, bounds=([40,1.31,0,-5,-30,0,0], [150,1.34,0.01,10,5,200,500]))
-    curve_fit0_TR = GplusPoly(x,*popt)
-    plt.plot(x,curve_fit0_TR,label='Fitting Curve',color='r',linestyle='--')
-    print(popt)
-    plt.xlabel(xAxis[num])
-    plt.ylabel("Count")
-    plt.legend()
-    plt.show()
-    
+    # curve_fit0_TR = GplusPoly(x,*popt)
+    # plt.plot(x,curve_fit0_TR,label='Fitting Curve',color='r',linestyle='--')
+    # print(popt)
+    # plt.xlabel(xAxis[num])
+    # plt.ylabel("Count")
+    # plt.legend()
+    # plt.show()
+    print("finished")
     return popt
 
 
@@ -211,9 +211,54 @@ def cuts():
         if breaker == "y":
             break
 
+def auto_cuts():
+    value_ranges = [ [1.1, 1.2], [35, 45], [25,35], [0.97, 0.99], [0.97, 0.99], [15, 25], [3, 5], [4, 6], [1.5, 2.5], [1.5, 2.5], [2,3], [10,14], [-1, 2], [-1, 3], [-1, 2]]
+    deltas = [0.3, 10, 10, 0.03, 0.03, 5, 2.5, 2.5, 1, 1, 1.5, 4, 2, 2, 2]
+    global RealXiData, num
+    while True:
+        num = int(input("What column?"))
+        max_significance = 0
+        optimal_params = [0, 0]
+        for centre in np.linspace(value_ranges[num-1][0], value_ranges[num-16][1], 10):
+            for delta in np.linspace(0, deltas[num-1], 10):
+                # print("centre " +str(centre))
+                # print("delta " +str(delta))
+                # print("deltas i-1 " +str(deltas[num-1]))
+                RealXiDataCopy  = np.zeros(17)
+                x = 0
+                while x < len(RealXiData):
+                    # print(RealXiData[x, num])
+                    if (RealXiData[x,num] < centre+delta and RealXiData[x,num] > centre-delta):
+                        RealXiDataCopy = np.vstack((RealXiDataCopy, RealXiData[x, :]))
+                    x += 1
+                # print(RealXiDataCopy)
+                # print("OUT OF WHILE")
+                if not np.array_equal(RealXiDataCopy, np.zeros(17)):
+                    try:
+                        # input()
+                        fit = gPlusPolyFit(RealXiDataCopy)
+                        totalIntegral = integrator(fit, 1.25, 1.4)[0]
+                        fit[3] = fit[4] = fit[5] = fit[6] = 0 # chage function to pure gaussian
+                        signalIntegral = integrator(fit,  1.25, 1.4)[0]
+                        significance = signalIntegral / totalIntegral
+                        print(significance)
+                        if significance > max_significance:
+                            max_significance = significance
+                            optimal_params = [centre, delta]
+                        # input()
+                    except (np.linalg.linalg.LinAlgError, RuntimeError) as e:
+                        print(e)
+        return (max_significance, optimal_params)
+                
+
+
+
+
+
+
 print("Please wait, this may take a while...")
-MCXiData = fileHandler(r'C:\root_v5.34.38\MC-xi-data.file') #Enter you file path for the Monte Carlo Data file!
-RealXiData = fileHandler(r'C:\root_v5.34.38\real-xi-data.file') #Enter you file path for the real Data file!
+MCXiData = fileHandler("MC-xi-data.file") #Enter you file path for the Monte Carlo Data file!
+RealXiData = fileHandler("cut_xi_real.file") #Enter you file path for the real Data file!
 
 
 ###Main Code        
@@ -255,6 +300,7 @@ while vChoice != "0":
     elif vChoice == "3":
         num = int(input("What column?"))
         (fit) = gPlusPolyFit()
+        print("ffff")
 
     # choice  4
     elif vChoice == "4":
@@ -275,6 +321,9 @@ while vChoice != "0":
     # choice  5
     elif vChoice == "5":
         save()
+
+    elif vChoice == "6":
+        print(auto_cuts())
 
     # some unknown choice
     else:
