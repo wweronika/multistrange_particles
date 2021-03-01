@@ -221,8 +221,8 @@ def cuts():
             break
 
 print("Please wait, this may take a while...")
-MCXiData = fileHandler(r'C:\root_v5.34.38\MC-xi-data.file') #Enter you file path for the Monte Carlo Data file!
-RealXiData = fileHandler(r'C:\root_v5.34.38\real-xi-data.file') #Enter you file path for the real Data file!
+MCXiData = fileHandler(r'MC-xi-data.file') #Enter you file path for the Monte Carlo Data file!
+RealXiData = fileHandler(r'real-xi-data.file') #Enter you file path for the real Data file!
 
 
 ###Main Code        
