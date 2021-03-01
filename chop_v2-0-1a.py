@@ -268,6 +268,9 @@ def auto_cuts():
 
 
 print("Please wait, this may take a while...")
+
+###CHANGE FILE LOCATIONS HERE:###
+
 MCXiData = fileHandler(r'C:\Users\neham\Downloads\Year 2\Lab project\Code\Canvas data files\MC-xi-data.file.txt') #Enter you file path for the Monte Carlo Data file!
 RealXiData = fileHandler(r'C:\Users\neham\Downloads\Year 2\Lab project\Code\Canvas data files\real-xi-data.file.txt') #Enter you file path for the real Data file!
 
@@ -287,7 +290,7 @@ while vChoice != "0":
     3 - Fit
     4 - Integrate
     5 - Save
-    
+    6 - Run Autocuts (Significance)
     """
     )
     
