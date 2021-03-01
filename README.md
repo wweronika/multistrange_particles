@@ -8,3 +8,8 @@ Background_chop:
 
 chop_v1:
 - Made a minor bug fix but other than that this is identical to the one in Dominic's branch 
+
+chop_v2-0-1a:
+- Fixed bug when plotting fitting function with Weronika's latest upload (chop_v2-0-1 in Weronika's branch)
+- Save function still does not work 
+- auto_cuts() not in use 
