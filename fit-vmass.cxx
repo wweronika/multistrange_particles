@@ -63,7 +63,7 @@
    func->SetParLimits(0,  50., 200.);
    func->SetParLimits(1, 1.11, 1.120);
    func->SetParLimits(2, 0.0003, 0.002);
-   func->SetParLimits(3, 10., 50.);
+   func->SetParLimits(3, 10., 150.);
 //   func->SetParameter(4,40);
 //
    func->SetParNames("constant","mean","sigma");
