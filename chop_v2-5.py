@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 from scipy import asarray as ar,exp
 import scipy.integrate as integrate
-
+plt.ion()
 
 ### Change axis Names
 Names = ["icand","Ximass","Vmass","V0radius","Casradius","Cascos","V0cos","DCAneg","DCApos", "DCAbach", "DCAV0", "DCAcas","DCAV0PV", "dOverM",
@@ -170,11 +170,10 @@ def gPlusPolyFit(data, Bounds = ([30,1.31,0,-5,-30,0,0], [150,1.34,0.01,10,5,200
     curve_fit0_TR = GplusPoly(x,*popt)
     plt.plot(x,curve_fit0_TR,label='Fitting Curve',color='r',linestyle='--')
     print(popt)
-    plt.xlabel(xAxis[1])
+    plt.xlabel(xAxis[Column])
     plt.ylabel("Count")
     plt.legend()
     plt.show()
-    
     return popt
 
 
@@ -381,8 +380,6 @@ while vChoice != "0":
         backgroundIntregral = np.delete(backgroundIntegral, 0, 0)    
         signif = np.delete(signif, 0)
         
-        #fig = plt.figure()
-        #ax = fig.
         if vType != "Guass":
             plt.plot(cutPoints, signalIntegral[:,0],label='Signal',color='r',linestyle='--')
             plt.plot(cutPoints, backgroundIntregral[:,0],label='Background',color='b',linestyle='--')
@@ -402,6 +399,7 @@ while vChoice != "0":
         plt.ylabel("Integral value")
         plt.legend()
         plt.show()
+        plt.pause(20)
         
     # some unknown choice
     else:
