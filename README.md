@@ -13,3 +13,6 @@ chop_v2-0-1a:
 - Fixed bug when plotting fitting function with Weronika's latest upload (chop_v2-0-1 in Weronika's branch)
 - Save function still does not work 
 - auto_cuts() not in use 
+
+fit-vmass.cxx
+- Uses Prof. Evans's fitting code primarily, with tweaks, to fit A Gaussian to the vmass with chosen cuts
