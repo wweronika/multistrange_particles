@@ -220,9 +220,220 @@ def cuts():
         if breaker == "y":
             break
 
+def significance_calculations():
+    signalIntegral = np.zeros(2)
+    backgroundIntegral = np.zeros(2)
+    signif = np.zeros(1)
+    
+    RealXiDataClone = np.copy(RealXiData)
+    column = int(input("Enter Column Number: "))
+    num = column
+    plot()
+    
+    ##Find where the max value is
+    (counts, bins) = np.histogram(RealXiData[:,column], bins=100)
+    largestBin = bins[np.argmax(counts)] #value of largest bin
+    Binwidth = bins[1] - bins[0]
+    #Min and Max data points
+    Min = np.min(RealXiData[:,column])
+    Max = np.max(RealXiData[:,column])
+    numPoints = 200 # Please Enter an Even Value
+    cutPoints = np.linspace(np.min(RealXiData[:,column]),np.max(RealXiData[:,column]),num=numPoints)   
+    j = 1
+    vType = ""        
+    
+    if column == 2:
+        setBounds = ([1,1.115,0,-5,-30,0,0], [150,1.1175,0.001,10,5,200,500])
+    elif column == 14:
+        setBounds = ([1,-1,0,-5,-30,0,0], [2500,1,5,10,5,200,500])
+    elif column == 15:
+        setBounds = ([1,-1,0,-5,-30,0,0], [1000,1,5,10,5,200,500])
+    elif column == 16:
+        setBounds = ([1,-1,0,-5,-30,0,0], [3000,1,5,10,5,200,500])    
+    
+    #Find if peak close to being at min/max
+    else:
+        #Find If closer to Min or max
+        if abs(Max - largestBin) < abs(largestBin - Min): # Then have a Peak value at Max
+            vType = "Max"
+            print("Max")
+            
+        else:   # Then have a Peak value at Min
+            vType = "Min"
+            print("Min")
+            cutPoints = np.flip(cutPoints) #Allows optomisation via not needing data to be reset
+            
+    if vType != "Max" and vType != "Min":            
+        vType = "Guass"    #Then have a gaussian
+        (fit) = gPlusPolyFit(RealXiData, Bounds = setBounds, Column = column, Bins = 200, Range = None)
+        lowerSigma = fit[1] - 2*fit[2]    
+        upperSigma = fit[1] + 2*fit[2]
+        
+        
+        lowerPoints = np.linspace(np.min(RealXiData[:,column]),lowerSigma,num=int(numPoints/2))
+        HigherPoints = np.flip(np.linspace(upperSigma,np.max(RealXiData[:,column]),num=int(numPoints/2)))
+        
+        cutPoints = np.concatenate((lowerPoints,HigherPoints))
+
+    
+    for i in cutPoints:
+        x = 0
+        if vType == "Max":
+            while x < len(RealXiDataClone):
+                if RealXiDataClone[x,column] < i:
+                    RealXiDataClone = np.delete(RealXiDataClone, x, 0)
+                else:
+                    x += 1
+                    
+        elif vType == "Min":
+            while x < len(RealXiDataClone):
+                if RealXiDataClone[x,column] > i:
+                    RealXiDataClone = np.delete(RealXiDataClone, x, 0)
+                else:
+                    x += 1
+        else:
+            if i <= lowerPoints[-1]:    
+                while x < len(RealXiDataClone):
+                    if RealXiDataClone[x,column] < i:
+                        RealXiDataClone = np.delete(RealXiDataClone, x, 0)
+                    else:
+                        x += 1
+                if i == lowerPoints[-1]:
+                    RealXiDataClone = np.copy(RealXiData)
+            else:    
+                while x < len(RealXiDataClone):
+                    if RealXiDataClone[x,column] > i:
+                        RealXiDataClone = np.delete(RealXiDataClone, x, 0)
+                    else:
+                        x += 1
+        
+        try:    #Check if Guassian can still be fitted on data set
+            (fit) = noGraphFit(RealXiDataClone, Bins = 300)
+        except RuntimeError:
+            print(j)
+            cutPoints = cutPoints[:j]
+            break
+        
+        peak = integrateSignal(fit)
+        background = integrateBackgroundSig(fit)
+        
+        signalIntegral = np.vstack((signalIntegral, peak))                
+        backgroundIntegral = np.vstack((backgroundIntegral,background))
+        
+        signif = np.vstack((signif,significance(peak[0],background[0])))
+        print(j)
+        j+=1
+        
+    signalIntegral = np.delete(signalIntegral, 0, 0)
+    backgroundIntregral = np.delete(backgroundIntegral, 0, 0)    
+    signif = np.delete(signif, 0)
+    
+    if vType != "Guass":
+        plt.plot(cutPoints, signalIntegral[:,0],label='Signal',color='r',linestyle='--')
+        plt.plot(cutPoints, backgroundIntregral[:,0],label='Background',color='b',linestyle='--')
+        plt.plot(cutPoints, signif,label='Significance',color='g')
+    else:
+        marker = int((numPoints/2)-1)
+        marker2 = int((numPoints/2))
+        plt.plot(cutPoints[:marker], signalIntegral[:marker,0],label='Signal',color='r',linestyle='--')
+        plt.plot(cutPoints[:marker], backgroundIntregral[:marker,0],label='Background',color='b',linestyle='--')
+        plt.plot(cutPoints[:marker], signif[:marker],label='Significance',color='g')
+        
+        plt.xlabel("Cut value of:  "+xAxis[column]) ##Create two grpahs - easier to read
+        plt.ylabel("Integral value")
+        plt.legend()
+        plt.show()            
+        
+        plt.plot(cutPoints[marker2:], signalIntegral[marker2:,0],color='r',linestyle='--')
+        plt.plot(cutPoints[marker2:], backgroundIntregral[marker2:,0],color='b',linestyle='--')
+        plt.plot(cutPoints[marker2:], signif[marker2:],color='g')
+    
+    plt.xlabel("Cut value of:  "+xAxis[column])
+    plt.ylabel("Integral value")
+    plt.legend()
+    plt.show()
+    plt.pause(30)
+
+### functions representing chosen cut values ###
+
+def ximass_correct(columns):
+  return columns[1] > 1.31 and columns[1] < 1.34
+
+def vmass_correct(columns):
+    return columns[2] > 1.11018 and columns[2] < 1.12025
+
+def v0radius_correct(columns):
+  return columns[3] < 46.95
+
+def casradius_correct(columns):
+  return columns[4] < 19.45
+
+def cascos_correct(columns):
+  return columns[5] > 0.992
+
+def v0cos_correct(columns):
+  return columns[6] > 0.985
+
+def dcaneg_correct(columns):
+  return columns[7] < 16.0
+
+def dcapos_correct(columns):
+  return columns[8] < 5.96
+
+def dcabach_correct(columns):
+  return columns[9] < 5.93
+
+def dcav0_correct(columns):
+  return columns[10] < 0.636
+
+def dcacas_correct(columns):
+  return columns[11] < 0.508
+
+def dcav0pv_correct(columns):
+  return columns[12] < 2.30
+
+def doverm_correct(columns):
+  return columns[13] < 9.61
+
+def nsigpion_correct(columns):
+  return columns[14] > -2 and columns[14] < 3
+
+def nsigproton_correct(columns):
+  return columns[15] > -3 and columns[15] < 5
+
+def nsigbach_correct(columns):
+  return columns[16] > -3 and columns[16] < 4
+
+
+def all_checks_correct(columns):
+    parameter_checks = [vmass_correct, v0radius_correct, casradius_correct, cascos_correct, v0cos_correct, dcaneg_correct, dcapos_correct, dcabach_correct, dcav0_correct, dcacas_correct, dcav0pv_correct, doverm_correct, nsigpion_correct, nsigproton_correct, nsigbach_correct]
+    for check in parameter_checks:
+        if not check(columns):
+            return False
+    return True
+
+### Function that applies and plots the decided cuts and their Gaussian fit
+
+def chosen_cuts():
+    RealXiDataClone = np.copy(RealXiData)
+    x = 0
+    while x < len(RealXiDataClone):
+        if not all_checks_correct(RealXiDataClone[x]):
+            # print(RealXiDataClone[x])
+            RealXiDataClone = np.delete(RealXiDataClone, x, 0)
+        else:
+            x += 1
+    # _, bins, _ = plt.hist(RealXiDataClone[:,1], bins = 100, range = [1.31, 1.33])
+    (fit) = gPlusPolyFit(RealXiDataClone, Range = [1.20,1.35])
+    print(fit)
+
+
+### End of function definitions
+### Parsing files
+
 print("Please wait, this may take a while...")
-MCXiData = fileHandler(r'C:\root_v5.34.38\MC-xi-data.file') #Enter you file path for the Monte Carlo Data file!
-RealXiData = fileHandler(r'C:\root_v5.34.38\real-xi-data.file') #Enter you file path for the real Data file!
+MCXiData = fileHandler(r'MC-xi-data.file') #Enter you file path for the Monte Carlo Data file!
+RealXiData = fileHandler(r'real-xi-data.file') #Enter you file path for the real Data file!
 
 
 ###Main Code        
@@ -286,138 +497,11 @@ while vChoice != "0":
         
    # choice  6
     elif vChoice == "6":
-        signalIntegral = np.zeros(2)
-        backgroundIntegral = np.zeros(2)
-        signif = np.zeros(1)
-        
-        RealXiDataClone = np.copy(RealXiData)
-        column = int(input("Enter Column Number: "))
-        num = column
-        plot()
-        
-        ##Find where the max value is
-        (counts, bins) = np.histogram(RealXiData[:,column], bins=100)
-        largestBin = bins[np.argmax(counts)] #value of largest bin
-        Binwidth = bins[1] - bins[0]
-        #Min and Max data points
-        Min = np.min(RealXiData[:,column])
-        Max = np.max(RealXiData[:,column])
-        numPoints = 200 # Please Enter an Even Value
-        cutPoints = np.linspace(np.min(RealXiData[:,column]),np.max(RealXiData[:,column]),num=numPoints)   
-        j = 1
-        vType = ""        
-        
-        if column == 2:
-            setBounds = ([1,1.115,0,-5,-30,0,0], [150,1.1175,0.001,10,5,200,500])
-        elif column == 14:
-            setBounds = ([1,-1,0,-5,-30,0,0], [2500,1,5,10,5,200,500])
-        elif column == 15:
-            setBounds = ([1,-1,0,-5,-30,0,0], [1000,1,5,10,5,200,500])
-        elif column == 16:
-            setBounds = ([1,-1,0,-5,-30,0,0], [3000,1,5,10,5,200,500])    
-        
-        #Find if peak close to being at min/max
-        else:
-            #Find If closer to Min or max
-            if abs(Max - largestBin) < abs(largestBin - Min): # Then have a Peak value at Max
-                vType = "Max"
-                print("Max")
-                
-            else:   # Then have a Peak value at Min
-                vType = "Min"
-                print("Min")
-                cutPoints = np.flip(cutPoints) #Allows optomisation via not needing data to be reset
-                
-        if vType != "Max" and vType != "Min":            
-            vType = "Guass"    #Then have a gaussian
-            (fit) = gPlusPolyFit(RealXiData, Bounds = setBounds, Column = column, Bins = 200, Range = None)
-            lowerSigma = fit[1] - 2*fit[2]    
-            upperSigma = fit[1] + 2*fit[2]
-            
-            
-            lowerPoints = np.linspace(np.min(RealXiData[:,column]),lowerSigma,num=int(numPoints/2))
-            HigherPoints = np.flip(np.linspace(upperSigma,np.max(RealXiData[:,column]),num=int(numPoints/2)))
-            
-            cutPoints = np.concatenate((lowerPoints,HigherPoints))
+        significance_calculations()
 
-        
-        for i in cutPoints:
-            x = 0
-            if vType == "Max":
-                while x < len(RealXiDataClone):
-                    if RealXiDataClone[x,column] < i:
-                        RealXiDataClone = np.delete(RealXiDataClone, x, 0)
-                    else:
-                        x += 1
-                        
-            elif vType == "Min":
-                while x < len(RealXiDataClone):
-                    if RealXiDataClone[x,column] > i:
-                        RealXiDataClone = np.delete(RealXiDataClone, x, 0)
-                    else:
-                        x += 1
-            else:
-                if i <= lowerPoints[-1]:    
-                    while x < len(RealXiDataClone):
-                        if RealXiDataClone[x,column] < i:
-                            RealXiDataClone = np.delete(RealXiDataClone, x, 0)
-                        else:
-                            x += 1
-                    if i == lowerPoints[-1]:
-                        RealXiDataClone = np.copy(RealXiData)
-                else:    
-                    while x < len(RealXiDataClone):
-                        if RealXiDataClone[x,column] > i:
-                            RealXiDataClone = np.delete(RealXiDataClone, x, 0)
-                        else:
-                            x += 1
-            
-            try:    #Check if Guassian can still be fitted on data set
-                (fit) = noGraphFit(RealXiDataClone, Bins = 300)
-            except RuntimeError:
-                print(j)
-                cutPoints = cutPoints[:j]
-                break
-            
-            peak = integrateSignal(fit)
-            background = integrateBackgroundSig(fit)
-            
-            signalIntegral = np.vstack((signalIntegral, peak))                
-            backgroundIntegral = np.vstack((backgroundIntegral,background))
-            
-            signif = np.vstack((signif,significance(peak[0],background[0])))
-            print(j)
-            j+=1
-            
-        signalIntegral = np.delete(signalIntegral, 0, 0)
-        backgroundIntregral = np.delete(backgroundIntegral, 0, 0)    
-        signif = np.delete(signif, 0)
-        
-        if vType != "Guass":
-            plt.plot(cutPoints, signalIntegral[:,0],label='Signal',color='r',linestyle='--')
-            plt.plot(cutPoints, backgroundIntregral[:,0],label='Background',color='b',linestyle='--')
-            plt.plot(cutPoints, signif,label='Significance',color='g')
-        else:
-            marker = int((numPoints/2)-1)
-            marker2 = int((numPoints/2))
-            plt.plot(cutPoints[:marker], signalIntegral[:marker,0],label='Signal',color='r',linestyle='--')
-            plt.plot(cutPoints[:marker], backgroundIntregral[:marker,0],label='Background',color='b',linestyle='--')
-            plt.plot(cutPoints[:marker], signif[:marker],label='Significance',color='g')
-            
-            plt.xlabel("Cut value of:  "+xAxis[column]) ##Create two grpahs - easier to read
-            plt.ylabel("Integral value")
-            plt.legend()
-            plt.show()            
-            
-            plt.plot(cutPoints[marker2:], signalIntegral[marker2:,0],color='r',linestyle='--')
-            plt.plot(cutPoints[marker2:], backgroundIntregral[marker2:,0],color='b',linestyle='--')
-            plt.plot(cutPoints[marker2:], signif[marker2:],color='g')
-        
-        plt.xlabel("Cut value of:  "+xAxis[column])
-        plt.ylabel("Integral value")
-        plt.legend()
-        plt.show()
-        plt.pause(30)
+    # choice 7
+    elif vChoice == "7":
+        chosen_cuts()
         
     # some unknown choice
     else:
