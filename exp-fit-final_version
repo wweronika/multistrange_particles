@@ -1,0 +1,81 @@
+import numpy as np
+from numpy import exp      # import the exp func for the Gauss fit
+import matplotlib.pyplot as plt
+from matplotlib import colors
+norm = colors.LogNorm()
+from scipy.optimize import curve_fit
+from scipy import asarray as ar,exp
+#TST: Evans code, I edited to get exp fit
+# define functions
+
+def mygauss(x,a,mean,sigma):
+    return a*2.71828**(-(x-mean)**2/(2*sigma**2))
+
+def myline(x,m,c):
+    return m*x+c
+
+def poly2D(t,A,B,C):
+    return A*t**2+B*t+C
+
+def gplusline(x,a,mean,sigma,m,c):
+     return a*np.exp(-(x-mean)**2/(2*sigma**2))+m*x+c
+     
+ #TST: exponential function
+ 
+def expFit(x,A,t):
+     return A *exp(-x/t)  #assumes no offset
+ 
+
+
+# f = open('MC-xi-data.file', 'r')
+f = open(r'C:\Users\tastu\MC-xi-data.file', 'r')
+
+ximass, v0mass, v0radius, dOverM = [], [], [], []
+for line in f:
+    line = line.strip()
+    columns = [float(s) for s in line.split()]
+    ximass.append(columns[1])
+    v0mass.append(columns[2])
+    v0radius.append(columns[3])
+    dOverM.append(columns[13]) #TST: added in dOverM, col 13
+
+  #  print("xi mass", ximass, "V0 mass", v0mass)
+#TST: calculates the gradient of column 13 to deduce the distance xi travels before decaying
+#TST: I realise the name is kinda misleading
+def gradient():
+    actual_distance = 1.639e-10 * 3e10 #TST: (calculated using mean lifetime on wiki)
+    
+    return 'in cm, actual value is =', actual_distance
+f.close()
+
+# plot histogram returning the number of bins and entries (Nhits) in each
+
+# note I had to limit the range of the histogram to get a fit (python is rubbish!)
+#TST: the range has changed to accomodate column 13 only
+x_axis = [element * 1.32171 for element in dOverM] #TST: dOverM * 1.32171 #rest mass of xi is 1321.71 MeV according to WIKI
+(nHits, bins, patches)=plt.hist(x_axis, bins = 100, range = [4,27],color='c')
+x = bins[:-1]
+y = nHits
+
+# set initial values for fit (otherwise you may not get a good fit)
+#
+init_vals = [200, 8]  
+# fit data setting the initial values and min and max (bounds) values of the parameters being fitted 
+#TST: altered the upper and lower bounds for new set of constants and parameters.
+popt,pcov = curve_fit(expFit, x, y, p0=init_vals, bounds=([0, 0], [250, 10]))
+curve_fit0_TR = expFit(x,*popt)
+#plot the fitted curve 
+plt.plot(x,curve_fit0_TR,label='Fitting Curve',color='r',linestyle='--')
+print(popt)
+
+plt.title('Effective mass plot for Xi')
+plt.xlabel('Effective $\Lambda \pi^{-}$ mass (GeV/c$^{2}$)')
+plt.ylabel('No. of Events / 4 MeV/c$^{2}$')
+plt.legend()
+plt.savefig('MCommass.pdf')
+plt.show()
+#plt.hist2d(ximass, v0radius, bins = 100)
+#plt.show()
+#checking to see gradient function works fine
+#TST: for comparison
+print(gradient())
