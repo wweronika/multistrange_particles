@@ -1,4 +1,4 @@
-##Dominic Herd, Anwesha Sahu, Lewis Kilbride
+##Dominic Herd, Anwesha Sahu, Lewis Kilbride, Weronika Wiesiolek
 ##Credit to Marc mmg998@student.bham.ac.uk for the guassian fitting function
 ##Date: 01/03/2021
 ##Version = 2.5
