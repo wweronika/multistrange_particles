@@ -309,7 +309,8 @@ while vChoice != "0":
         #Find if peak close to being at min/max
         if (abs(Max - largestBin) < 10*Binwidth) or (abs(Min - largestBin) < 10*Binwidth):
             #Find If closer to Min or max
-            if abs(Max - largestBin) < abs(largestBin - Min): # Then have a Peak value at Max
+            # If DCA_bachelor (column 10), cut the min values
+            if abs(Max - largestBin) < abs(largestBin - Min) or column == 10 : # Then have a Peak value at Max
                 vType = "Max"
                 print("Max")
                 

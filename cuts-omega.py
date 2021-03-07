@@ -2,61 +2,63 @@
 import matplotlib.pyplot as plt
 from scipy import stats
 
+#  1.32181076e+00  1.56580305e-03
+
 def ximass_correct(columns):
-  return columns[1] > 1.31 and columns[1] < 1.34
+  return columns[2] < 1.30 or columns[2] > 1.35
 
 def vmass_correct(columns):
-    return columns[2] > 1.11018 and columns[2] < 1.12025
+    return columns[3] > 1.11018 and columns[3] < 1.12025
 
 def v0radius_correct(columns):
-  return columns[3] < 46.95
+  return columns[4] < 46.95
 
 def casradius_correct(columns):
-  return columns[4] < 19.45
+  return columns[5] < 19.45
 
 def cascos_correct(columns):
-  return columns[5] > 0.992
+  return columns[6] > 0.99
 
 def v0cos_correct(columns):
-  return columns[6] > 0.985
+  return columns[7] > 0.99
 
 def dcaneg_correct(columns):
-  return columns[7] < 16.0
+  return columns[8] < 16.0
 
 def dcapos_correct(columns):
-  return columns[8] < 5.96
+  return columns[9] < 5.96
 
 def dcabach_correct(columns):
-  return columns[9] < 5.93
+  return columns[10] > 0.4
 
 def dcav0_correct(columns):
-  return columns[10] < 0.636
+  return columns[11] < 0.636
 
 def dcacas_correct(columns):
-  return columns[11] < 0.508
+  return columns[12] < 0.508
 
 def dcav0pv_correct(columns):
-  return columns[12] < 2.30
+  return columns[13] < 2.30
 
 def doverm_correct(columns):
-  return columns[13] < 9.61
+  return columns[14] < 9.61
 
 def nsigpion_correct(columns):
-  return columns[14] > -2 and columns[14] < 3
+  return columns[15] > -2 and columns[15] < 3
 
 def nsigproton_correct(columns):
-  return columns[15] > -3 and columns[15] < 5
+  return columns[16] > -2 and columns[16] < 2
 
 def nsigbach_correct(columns):
-  return columns[16] > -3 and columns[16] < 4
+  return columns[17] > -3 and columns[17] < 4
 
 
 parameter_checks = [vmass_correct, v0radius_correct, casradius_correct, cascos_correct, v0cos_correct, dcaneg_correct, dcapos_correct, dcabach_correct, dcav0_correct, dcacas_correct, dcav0pv_correct, doverm_correct, nsigpion_correct, nsigproton_correct, nsigbach_correct]
-
+parameter_checks_2 = [ximass_correct, dcabach_correct, nsigproton_correct, cascos_correct, v0cos_correct]
 
 
 def all_correct(columns):
-  for check in parameter_checks:
+  for check in parameter_checks_2:
     # print(check(columns))
     # print(check.__name__)
     if not check(columns):
@@ -77,8 +79,8 @@ def write_row(f, columns):
     f.write(str(column) + " ")
   f.write("\n")
 
-f_in= open('real-xi-data.file', 'r')
-f_out = open('cut_xi_real.file', 'w')
+f_in= open('real-omega-data.file', 'r')
+f_out = open('cut_omega_real.file', 'w')
 
 ximass, v0mass = [], []
 for line in f_in:
@@ -87,13 +89,14 @@ for line in f_in:
     # print(columns)
     if all_correct(columns):
       write_row(f_out, columns)
+      # print(columns)
 
   #  print("xi mass", ximass, "V0 mass", v0mass)
 
 f_in.close()
 f_out.close()
 
-f_in_2 = open("cut_xi_real.file", "r")
+f_in_2 = open("cut_omega_real.file", "r")
 
 ximass = []
 
@@ -102,7 +105,7 @@ for line in f_in_2:
     columns = [float(s) for s in line.split()]
     ximass.append(columns[1])
 
-_, bins, _ = plt.hist(ximass, bins = 200, range = [1.2, 1.6])
+_, bins, _ = plt.hist(ximass, bins = 100, range = [1.6, 2])
 
 mu, sigma = stats.norm.fit(ximass)
 best_fit_line = stats.norm.pdf(bins, mu, sigma)
