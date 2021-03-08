@@ -4,6 +4,9 @@ from scipy import stats
 
 #  1.32181076e+00  1.56580305e-03
 
+def ommass_large(columns):
+  return columns[1] > 1.7
+
 def ximass_correct(columns):
   return columns[2] < 1.30 or columns[2] > 1.35
 
@@ -79,15 +82,15 @@ def write_row(f, columns):
     f.write(str(column) + " ")
   f.write("\n")
 
-f_in= open('real-omega-data.file', 'r')
+f_in= open('real-Omega-data.file', 'r')
 f_out = open('cut_omega_real.file', 'w')
 
-ximass, v0mass = [], []
+# ommass, v0mass = [], []
 for line in f_in:
     line = line.strip()
     columns = [float(s) for s in line.split()]
     # print(columns)
-    if all_correct(columns):
+    if not ommass_large(columns):
       write_row(f_out, columns)
       # print(columns)
 
@@ -96,26 +99,28 @@ for line in f_in:
 f_in.close()
 f_out.close()
 
-f_in_2 = open("cut_omega_real.file", "r")
+for num in range(2,18):
+    
+  f_in_2 = open("cut_omega_real.file", "r")
 
-ximass = []
+  var2 = []
 
-for line in f_in_2:
-    line = line.strip()
-    columns = [float(s) for s in line.split()]
-    ximass.append(columns[1])
+  for line in f_in_2:
+      line = line.strip()
+      columns = [float(s) for s in line.split()]
+      var2.append(columns[17])
 
-_, bins, _ = plt.hist(ximass, bins = 100, range = [1.6, 2])
+  _, bins, _ = plt.hist(var2, bins = 100, range = [-3, 3])
 
-mu, sigma = stats.norm.fit(ximass)
-best_fit_line = stats.norm.pdf(bins, mu, sigma)
-plt.plot(bins, best_fit_line)
+  mu, sigma = stats.norm.fit(var2)
+  best_fit_line = stats.norm.pdf(bins, mu, sigma)
+  plt.plot(bins, best_fit_line)
 
-plt.title('Effective mass plot for Xi')
-plt.xlabel('Effective $\Lambda \pi^{-}$ mass (GeV/c$^{2}$)')
-plt.ylabel('No. of Events / 4 MeV/c$^{2}$')
-# plt.savefig('ximass.pdf')
-plt.show()
-#plt.hist2d(ximass, v0mass, bins = 100)
-#plt.show()
+  plt.title('Effective mass plot for Xi')
+  plt.xlabel('Effective $\Lambda \pi^{-}$ mass (GeV/c$^{2}$)')
+  plt.ylabel('No. of Events / 4 MeV/c$^{2}$')
+  # plt.savefig('var2.pdf')
+  plt.show()
+  #plt.hist2d(ximass, v0mass, bins = 100)
+  #plt.show()
 
