@@ -5,7 +5,7 @@ from math import sqrt
 f = open('real-Omega-data.file', 'r')
 
 ommass, var2 = [], []
-n_var = 9 #change number for a different variable
+n_var = 8 #change number for a different variable
 i = 0
 for line in f:
     line = line.strip()
@@ -22,5 +22,5 @@ y_start = min(var2)
 y_end = max(var2)
 n_bins = 100
 print(x_start)
-h =plt.hist2d(ommass, var2,  range=[[x_start, 1.8], [0, 0.05]], bins = n_bins)
+h =plt.hist2d(ommass, var2,  range=[[x_start, 1.8], [0,1]], bins = n_bins)
 plt.show()

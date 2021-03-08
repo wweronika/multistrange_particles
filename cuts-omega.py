@@ -7,8 +7,11 @@ from scipy import stats
 def ommass_large(columns):
   return columns[1] > 1.7
 
+def ommass_small(columns):
+  return columns[1] < 1.65
+
 def ximass_correct(columns):
-  return columns[2] < 1.30 or columns[2] > 1.35
+  return not (columns[2] > 1.31 and columns[2] < 1.34) and columns[2] <1.50
 
 def vmass_correct(columns):
     return columns[3] > 1.11018 and columns[3] < 1.12025
@@ -61,7 +64,7 @@ parameter_checks_2 = [ximass_correct, dcabach_correct, nsigproton_correct, casco
 
 
 def all_correct(columns):
-  for check in parameter_checks_2:
+  for check in parameter_checks:
     # print(check(columns))
     # print(check.__name__)
     if not check(columns):
@@ -82,45 +85,66 @@ def write_row(f, columns):
     f.write(str(column) + " ")
   f.write("\n")
 
+
+
+
+def show_all_plots(data):
+  for i in range(18):
+    plt.hist(data[i], bins = 100, range = [min(data[i]), max(data[i])])
+    plt.title('Effective mass plot for Omega')
+    plt.xlabel('Effective $\Lambda \pi^{-}$ mass (GeV/c$^{2}$)')
+    plt.ylabel('No. of Events / 4 MeV/c$^{2}$')
+    # plt.savefig('ximass.pdf')
+    plt.show()
+    #plt.hist2d(ximass, v0mass, bins = 100)
+    #plt.show()
+
+def show_plot(property):
+  plt.hist(property, bins = 120, range = [min(property), max(property)])
+  plt.title('Effective mass plot for Omega')
+  plt.xlabel('Effective $\Lambda \pi^{-}$ mass (GeV/c$^{2}$)')
+  plt.ylabel('No. of Events / 4 MeV/c$^{2}$')
+  # plt.savefig('ximass.pdf')
+  plt.show()
+  #plt.hist2d(ximass, v0mass, bins = 100)
+  #plt.show()
+
+
+
+# Read original file and save to output file if the checks are correct
+
 f_in= open('real-Omega-data.file', 'r')
-f_out = open('cut_omega_real.file', 'w')
+f_out = open('cut_low_mass_omega_real.file', 'w')
 
-# ommass, v0mass = [], []
+n_points = 0
+
+ximass, v0mass = [], []
 for line in f_in:
-    line = line.strip()
-    columns = [float(s) for s in line.split()]
-    # print(columns)
-    if not ommass_large(columns):
-      write_row(f_out, columns)
-      # print(columns)
-
-  #  print("xi mass", ximass, "V0 mass", v0mass)
+  n_points += 1
+  line = line.strip()
+  columns = [float(s) for s in line.split()]
+  if ommass_small(columns):
+    write_row(f_out, columns)
 
 f_in.close()
 f_out.close()
 
-for num in range(2,18):
-    
-  f_in_2 = open("cut_omega_real.file", "r")
+# Read cut file and plot data
 
-  var2 = []
+f_in_2 = open("cut_low_mass_omega_real.file", "r")
 
-  for line in f_in_2:
-      line = line.strip()
-      columns = [float(s) for s in line.split()]
-      var2.append(columns[17])
+omegamass = []
+data = [[] for i in range(18)]
 
-  _, bins, _ = plt.hist(var2, bins = 100, range = [-3, 3])
+for line in f_in_2:
+    line = line.strip()
+    columns = [float(s) for s in line.split()]
+    omegamass.append(columns[1])
+    # print(columns[2])
+    for i in range(18):
+      data[i].append(columns[i])
 
-  mu, sigma = stats.norm.fit(var2)
-  best_fit_line = stats.norm.pdf(bins, mu, sigma)
-  plt.plot(bins, best_fit_line)
+print(len(omegamass)/n_points)
 
-  plt.title('Effective mass plot for Xi')
-  plt.xlabel('Effective $\Lambda \pi^{-}$ mass (GeV/c$^{2}$)')
-  plt.ylabel('No. of Events / 4 MeV/c$^{2}$')
-  # plt.savefig('var2.pdf')
-  plt.show()
-  #plt.hist2d(ximass, v0mass, bins = 100)
-  #plt.show()
+show_plot(data[16])
 
