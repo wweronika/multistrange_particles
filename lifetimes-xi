@@ -1,0 +1,87 @@
+#This code determines the distance travelled by particle before decaying using column 13 and shows the actual value for comparison
+import numpy as np
+from numpy import exp      # import the exp func for the Gauss fit
+import matplotlib.pyplot as plt
+from matplotlib import colors
+norm = colors.LogNorm()
+from scipy.optimize import curve_fit
+from scipy import asarray as ar,exp
+#Evans code, I edited to get exp fit
+# define functions
+
+def mygauss(x,a,mean,sigma):
+    return a*2.71828**(-(x-mean)**2/(2*sigma**2))
+
+def myline(x,m,c):
+    return m*x+c
+
+def poly2D(t,A,B,C):
+    return A*t**2+B*t+C
+
+def gplusline(x,a,mean,sigma,m,c):
+     return a*np.exp(-(x-mean)**2/(2*sigma**2))+m*x+c
+ #exponential function
+def expFit(x,A,t):
+     return A *exp(-x/t)  #assumes no offset
+ 
+ #new exponential function with better fitting
+def expFitnew(x,A,B,t1,t2):
+     return A*exp(-x/t1)+B*exp(-x/t2) #assumes no offset
+ 
+
+# f = open('MC-xi-data.file', 'r')
+f = open(r'C:\Users\tastu\MC-xi-data.file', 'r')
+
+ximass, v0mass, v0radius, dOverM = [], [], [], []
+for line in f:
+    line = line.strip()
+    columns = [float(s) for s in line.split()]
+    ximass.append(columns[1])
+    v0mass.append(columns[2])
+    v0radius.append(columns[3])
+    dOverM.append(columns[13]) #added in dOverM, col 13
+
+  #  print("xi mass", ximass, "V0 mass", v0mass)
+#calculates the gradient of column 13 to deduce the distance xi travels before decaying
+def gradient():
+    actual_distance_xi = 1.639e-10 * 3e10 #(calculated using mean lifetime on wiki)
+    #lifetime * speed of light
+    
+    return 'The distance travelled before decaying by Xi, in cm(MC data) =', actual_distance_xi
+f.close()
+
+# plot histogram returning the number of bins and entries (Nhits) in each
+
+# note I had to limit the range of the histogram to get a fit (python is rubbish!)
+#the range has changed to accomodate column 13 only
+x_axis_xi = [element * 1.322 for element in dOverM]
+
+ #dOverM * 1.32171 #rest mass of xi is 1321.71 MeV
+ # range [4, 27]
+
+(nHits, bins, patches)=plt.hist(x_axis_xi, bins = 100, range = [4,27],color='y')
+x = bins[:-1]
+y = nHits
+
+# set initial values for fit (otherwise you may not get a good fit)
+#200 and 8
+init_vals = [200, 8]  
+# fit data setting the initial values and min and max (bounds) values of the parameters being fitted 
+#altered the upper and lower bounds for new set of constants and parameters.
+#bounds 250 and 10
+popt,pcov = curve_fit(expFit, x, y, p0=init_vals, bounds=([0, 0], [450, 10]))
+curve_fit0_TR = expFit(x,*popt)
+#plot the fitted curve 
+plt.plot(x,curve_fit0_TR,label='Fitting Curve',color='r',linestyle='--')
+print(popt)
+
+plt.title('dOverM plot for Xi')
+plt.xlabel('Effective $\Lambda \pi^{-}$ mass (GeV/c$^{2}$)')
+plt.ylabel('No. of Events / 4 MeV/c$^{2}$')
+plt.legend()
+plt.savefig('MCommass.pdf')
+plt.show()
+#plt.hist2d(ximass, v0radius, bins = 100)
+#plt.show()
+#checking to see gradient function works fine
+print(gradient())
