@@ -60,7 +60,7 @@ def nsigbach_correct(columns):
 
 
 parameter_checks = [ximass_correct, vmass_correct, v0radius_correct, casradius_correct, cascos_correct, v0cos_correct, dcaneg_correct, dcapos_correct, dcabach_correct, dcav0_correct, dcacas_correct, dcav0pv_correct, doverm_correct, nsigpion_correct, nsigproton_correct, nsigbach_correct]
-parameter_checks_2 = [ximass_correct, dcabach_correct, nsigproton_correct, nsigpion_correct, nsigbach_correct, cascos_correct, v0cos_correct, dcav0pv_correct, vmass_correct, v0radius_correct, casradius_correct, dcaneg_correct, dcapos_correct, dcav0_correct, dcacas_correct]
+parameter_checks_2 = [ximass_correct, dcabach_correct, nsigproton_correct, nsigpion_correct, nsigbach_correct, cascos_correct, v0cos_correct, dcav0pv_correct, vmass_correct, v0radius_correct, casradius_correct, dcaneg_correct, dcapos_correct, dcav0_correct, dcacas_correct, doverm_correct]
 
 
 def all_checks_correct(columns):
@@ -113,12 +113,15 @@ def show_plot(property):
 f_in= open('real-Omega-data.file', 'r')
 f_out = open('cut_low_mass_omega_real.file', 'w')
 
+n_lines = 0
+
 ximass, v0mass = [], []
 for line in f_in:
     line = line.strip()
     columns = [float(s) for s in line.split()]
     if all_checks_correct(columns):
       write_row(f_out, columns)
+      n_lines += 1
 
 f_in.close()
 f_out.close()
@@ -134,9 +137,9 @@ for line in f_in_2:
     line = line.strip()
     columns = [float(s) for s in line.split()]
     omegamass.append(columns[1])
-    print(columns[2])
+    # print(columns[2])
     for i in range(18):
       data[i].append(columns[i])
 
 show_plot(data[1])
-
+print(n_lines)

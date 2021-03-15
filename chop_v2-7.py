@@ -1,9 +1,17 @@
+<<<<<<< HEAD
 ##Dominic Herd, Anwesha Sahu, Lewis Kilbride, Weronika Wiesiolek
+=======
+##Dominic Herd, Anwesha Sahu, Lewis Kilbride
+>>>>>>> 8b54608e5ef6b1386ac36c6bca203bb3d97c1ff3
 ##Credit to Marc mmg998@student.bham.ac.uk for the guassian fitting function
 ##Date: 01/03/2021
 ##Version = 2.5
 #Known Bugs:
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 8b54608e5ef6b1386ac36c6bca203bb3d97c1ff3
 import numpy as np
 from matplotlib import colors
 norm = colors.LogNorm()
@@ -12,11 +20,19 @@ from scipy.optimize import curve_fit
 from scipy import asarray as ar,exp
 import scipy.integrate as integrate
 plt.ion()
+<<<<<<< HEAD
  
 ### Change axis Names
 Names = ["icand","Ximass","Vmass","V0radius","Casradius","Cascos","V0cos","DCAneg","DCApos", "DCAbach", "DCAV0", "DCAcas","DCAV0PV", "dOverM",
       "NsigPion", "NgisProton", "NsigBach"]
  
+=======
+
+### Change axis Names
+Names = ["icand","Ximass","Vmass","V0radius","Casradius","Cascos","V0cos","DCAneg","DCApos", "DCAbach", "DCAV0", "DCAcas","DCAV0PV", "dOverM",
+      "NsigPion", "NgisProton", "NsigBach"]
+
+>>>>>>> 8b54608e5ef6b1386ac36c6bca203bb3d97c1ff3
 xAxis = ["","Effective mass of the bachelor pion and Lambda system (GeV)",
          "Effective mass of the V0 daughters (GeV)",
          "Distance between the primary vertex (PV) and the Lambda vertex (cm)",
@@ -34,7 +50,11 @@ xAxis = ["","Effective mass of the bachelor pion and Lambda system (GeV)",
          "PID of proton i.e. no. of sigmas (standard deviations) from being a proton",
          "PID of bachelor i.e. no. of sigmas (standard deviations) from being a pion"
          ]
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 8b54608e5ef6b1386ac36c6bca203bb3d97c1ff3
 Titles = ["","Effective mass of the bachelor pion and Lambda system",
           "Effective mass of the V0 daughters",
           "Distance between the primary vertex (PV) and the Lambda vertex",
@@ -52,16 +72,25 @@ Titles = ["","Effective mass of the bachelor pion and Lambda system",
           "PID of proton",
           "PID of bachelor"
           ]
+<<<<<<< HEAD
  
  
 def fileHandler(filename):
     r = open(filename, 'r')
  
+=======
+
+
+def fileHandler(filename):
+    r = open(filename, 'r')
+
+>>>>>>> 8b54608e5ef6b1386ac36c6bca203bb3d97c1ff3
     data = np.zeros(17)  #Formating Declaration
     for line in r:
         line = line.strip()
         newData = np.array([float(s) for s in line.split()])
         data = np.vstack((data, newData)) # data holds 2d array: List[Particle Array Index,Data value: 0-16]            
+<<<<<<< HEAD
  
     r.close()
     data = np.delete(data, 0, 0) #Removing Formating Declaration
@@ -72,51 +101,94 @@ def save():
     FileSaveLocation = input("")
     np.savetxt(FileSaveLocation, RealXiData)
  
+=======
+       
+    r.close()
+    data = np.delete(data, 0, 0) #Removing Formating Declaration
+    
+    return data
+
+def save():
+    FileSaveLocation = input("")
+    np.savetxt(FileSaveLocation, RealXiData)
+    
+>>>>>>> 8b54608e5ef6b1386ac36c6bca203bb3d97c1ff3
 def plot(scaleCheck = "n"):
     ###plots RealXiData and MCXiData 
     global MCXiData, RealXiData, plt, num     
     numOfBins = 250
     binwidth = (np.max(RealXiData[:,num]) - np.min(RealXiData[:,num]))/numOfBins
     standardBins = np.linspace(np.min(RealXiData[:,num]), np.max(RealXiData[:,num]) + binwidth, numOfBins)  
+<<<<<<< HEAD
  
+=======
+    
+>>>>>>> 8b54608e5ef6b1386ac36c6bca203bb3d97c1ff3
     if scaleCheck == "y":        
         FactorToOne(MCXiData[:,num], alpha = 0.8, label = "MC Xi")
         FactorToOne(RealXiData[:,num], label = "Real Xi")
         yText = 'Scalar Factored Counts (Arbitary Units)'
+<<<<<<< HEAD
  
+=======
+        
+>>>>>>> 8b54608e5ef6b1386ac36c6bca203bb3d97c1ff3
     else:
         plt.hist(MCXiData[:,num], bins = standardBins, alpha=0.8, label='MC Xi')
         plt.hist(RealXiData[:,num], bins = standardBins, alpha=0.5, label='Real Xi')
         yText = "Counts"
+<<<<<<< HEAD
  
     plt.legend(loc='upper right')
  
+=======
+        
+    plt.legend(loc='upper right')
+    
+>>>>>>> 8b54608e5ef6b1386ac36c6bca203bb3d97c1ff3
     plt.title(Titles[num])
     plt.xlabel(xAxis[num]) 
     plt.ylabel(yText)
     plt.show()
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 8b54608e5ef6b1386ac36c6bca203bb3d97c1ff3
 def FactorToOne(data, alpha = 0.5, label = ""): #Force Histogram y axis max to be 1
     global plt
     (counts, bins) = np.histogram(data, bins=100)
     factor = 1/np.max(counts)
     plt.hist(bins[:-1], bins, weights = factor*counts, alpha=alpha, label= label + " | Y Factor:"+format(factor,'.6f'))
+<<<<<<< HEAD
  
 def integrator(arugments, start, finish):
     value = integrate.quad(GplusPoly, start, finish,args = tuple(arugments))
     return value
  
+=======
+
+def integrator(arugments, start, finish):
+    value = integrate.quad(GplusPoly, start, finish,args = tuple(arugments))
+    return value
+
+>>>>>>> 8b54608e5ef6b1386ac36c6bca203bb3d97c1ff3
 def integrateSignal(arugments): 
     tempArg = np.copy(arugments)
     tempArg[3] = 0; tempArg[4] = 0; tempArg[5] = 0; tempArg[6] = 0    
     value = integrate.quad(GplusPoly, standToValue(-2,fit), standToValue(2,fit), args = tuple(tempArg))
     return value
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 8b54608e5ef6b1386ac36c6bca203bb3d97c1ff3
 def integrateBackgroundSig(arugments):
     tempArg = np.copy(arugments)
     tempArg[0] = 0; tempArg[1] = 0; tempArg[2] = 0
     value = integrate.quad(GplusPoly, standToValue(-2,fit), standToValue(2,fit), args = tuple(tempArg))
     return value
+<<<<<<< HEAD
  
 def standToValue(divations,fit):
     return fit[2]*divations + fit[1]
@@ -134,6 +206,25 @@ def gauss(t,a,mu,sigma):
 def poly2D(t,A,B,C):
     return A*t**2+B*t+C
  
+=======
+
+def standToValue(divations,fit):
+    return fit[2]*divations + fit[1]
+    
+def significance(peak,background):
+    return peak/np.sqrt(peak + background)
+
+########################################
+#########   Function definitions
+########################################
+
+def gauss(t,a,mu,sigma):
+    return a*2.71828**(-(t-mu)**2/(2*sigma**2))
+
+def poly2D(t,A,B,C):
+    return A*t**2+B*t+C
+
+>>>>>>> 8b54608e5ef6b1386ac36c6bca203bb3d97c1ff3
 def GplusPoly(t,a,mu,sigma,A,B,C,D):
     return gauss(t,a,mu,sigma)+D*poly2D(t,A,B,C)
 ########################################
@@ -144,6 +235,7 @@ def noGraphFit(RealXiDataClone, bounds = ([30,1.31,0,-5,-30,0,0], [150,1.34,0.01
     y = nHits
     popt,pcov = curve_fit(GplusPoly, x, y, bounds=bounds)
     return popt
+<<<<<<< HEAD
  
 def gPlusPolyFit(data, Bounds = ([30,1.31,0,-5,-30,0,0], [150,1.34,0.01,10,5,200,500]), Column = 1, Bins = 500, Range = [1.28,1.55]):
     RealXiDataClone = np.copy(data)
@@ -159,13 +251,34 @@ def gPlusPolyFit(data, Bounds = ([30,1.31,0,-5,-30,0,0], [150,1.34,0.01,10,5,200
     #########   Function definitions
     ########################################
  
+=======
+
+def gPlusPolyFit(data, Bounds = ([30,1.31,0,-5,-30,0,0], [150,1.34,0.01,10,5,200,500]), Column = 1, Bins = 500, Range = [1.28,1.55]):
+    RealXiDataClone = np.copy(data)
+    (nHits, bins, patches) = plt.hist(RealXiDataClone[:,Column], bins=Bins, label= 'Real Xi', range = Range)
+    
+    # bins is the data file so using bins[:-1] it's just selecting the whole dataset
+    x = bins[:-1] 
+    
+    # definition of y as the number of Hits (the Y axis of the histogram)
+    y = nHits
+    
+    ########################################
+    #########   Function definitions
+    ########################################
+    
+>>>>>>> 8b54608e5ef6b1386ac36c6bca203bb3d97c1ff3
     #curve_fit is a useful tool for fitting any function with Python.
     #The first argument is the function we want to fit: GplusPoly (the function defined above as the sum of a 2nd degree polynomia and a Guassian.)
     #Second argument: x the X values we want to work with
     #Third argument: y are the Y values of the function associated to X
     #Fourth argument: bounds are the bounds of the parameters of the fit Notice the form: [p1_min,p2_min,p3_min,...] and [p1_max,p2_max,p3_max,...]
     #NOTICE also that the bounds are very important here. Vague limits too much could lead to a bad fitting.
+<<<<<<< HEAD
  
+=======
+    
+>>>>>>> 8b54608e5ef6b1386ac36c6bca203bb3d97c1ff3
     popt,pcov = curve_fit(GplusPoly, x, y, bounds = Bounds)
     curve_fit0_TR = GplusPoly(x,*popt)
     plt.plot(x,curve_fit0_TR,label='Fitting Curve',color='r',linestyle='--')
@@ -175,19 +288,29 @@ def gPlusPolyFit(data, Bounds = ([30,1.31,0,-5,-30,0,0], [150,1.34,0.01,10,5,200
     plt.legend()
     plt.show()
     return popt
+<<<<<<< HEAD
  
  
+=======
+
+
+>>>>>>> 8b54608e5ef6b1386ac36c6bca203bb3d97c1ff3
 def tryFloat(data):
     try:
         return float(data)
     except ValueError:
         print("Error (Please ignore)")
         return "null"
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 8b54608e5ef6b1386ac36c6bca203bb3d97c1ff3
 def cuts():
     global RealXiData, num
     while True:
         num = int(input("What column?"))  
+<<<<<<< HEAD
  
         scaleCheck = input("Do you want the y-axis to be Scalared to 1? (y/n) ")
         plot(scaleCheck)
@@ -198,6 +321,18 @@ def cuts():
         UpperLim = input("Upper Limit ('null' = No Limit): ")
         UpperLim = tryFloat(UpperLim)
  
+=======
+      
+        scaleCheck = input("Do you want the y-axis to be Scalared to 1? (y/n) ")
+        plot(scaleCheck)
+        
+        lowerLim = input("Lower Limit ('null' = No Limit): ")
+        lowerLim = tryFloat(lowerLim)
+        
+        UpperLim = input("Upper Limit ('null' = No Limit): ")
+        UpperLim = tryFloat(UpperLim)
+        
+>>>>>>> 8b54608e5ef6b1386ac36c6bca203bb3d97c1ff3
         if type(lowerLim) != str:
             x = 0
             while x < len(RealXiData):
@@ -205,7 +340,11 @@ def cuts():
                     RealXiData = np.delete(RealXiData, x, 0)
                 else:
                     x += 1
+<<<<<<< HEAD
  
+=======
+        
+>>>>>>> 8b54608e5ef6b1386ac36c6bca203bb3d97c1ff3
         if type(UpperLim) != str:
             x = 0
             while x < len(RealXiData):
@@ -213,6 +352,7 @@ def cuts():
                     RealXiData = np.delete(RealXiData, x, 0)
                 else:
                     x += 1
+<<<<<<< HEAD
  
         plot(scaleCheck)
  
@@ -368,6 +508,28 @@ while vChoice != "0":
     """
     Menu
  
+=======
+             
+        plot(scaleCheck)
+        
+        breaker = input('Do you want stop applying cuts? (y/n) ')
+        if breaker == "y":
+            break
+
+print("Please wait, this may take a while...")
+MCXiData = fileHandler(r'C:\root_v5.34.38\MC-xi-data.file') #Enter you file path for the Monte Carlo Data file!
+RealXiData = fileHandler(r'C:\root_v5.34.38\real-xi-data.file') #Enter you file path for the real Data file!
+
+
+###Main Code        
+vChoice = None
+while vChoice != "0":
+
+    print(
+    """
+    Menu
+    
+>>>>>>> 8b54608e5ef6b1386ac36c6bca203bb3d97c1ff3
     0 - Exit
     1 - Start Cuts
     2 - Graph
@@ -375,6 +537,7 @@ while vChoice != "0":
     4 - Integrate
     5 - Save
     6 - Significance Graph
+<<<<<<< HEAD
  
     """
     )
@@ -389,16 +552,40 @@ while vChoice != "0":
     elif vChoice == "1":
         cuts()
  
+=======
+    
+    """
+    )
+    
+    vChoice = input("Choice: ")
+
+    # exit
+    if vChoice == "0":
+        exit()
+
+    # choice  1
+    elif vChoice == "1":
+        cuts()
+
+>>>>>>> 8b54608e5ef6b1386ac36c6bca203bb3d97c1ff3
     # choice  2
     elif vChoice == "2":
         num = int(input("What column?"))      
         scaleCheck = input("Do you want the y-axis to be Scalared to 1? (y/n) ")
         plot(scaleCheck)
+<<<<<<< HEAD
  
     # choice  3
     elif vChoice == "3":
         (fit) = gPlusPolyFit(RealXiData)
  
+=======
+        
+    # choice  3
+    elif vChoice == "3":
+        (fit) = gPlusPolyFit(RealXiData)
+
+>>>>>>> 8b54608e5ef6b1386ac36c6bca203bb3d97c1ff3
     # choice  4
     elif vChoice == "4":
         breaker = False
@@ -406,12 +593,17 @@ while vChoice != "0":
             fit = fit
         except NameError:
             breaker = True
+<<<<<<< HEAD
  
+=======
+        
+>>>>>>> 8b54608e5ef6b1386ac36c6bca203bb3d97c1ff3
         if not breaker:
             lowerLimDev = float(input("Lower Limit in sigma: "))
             UpperLimDev = float(input("Upper Limit in sigma: "))
             lowerLimVal = standToValue(lowerLimDev, fit)
             UpperLimVal = standToValue(UpperLimDev, fit)
+<<<<<<< HEAD
  
             print(integrator(fit, lowerLimVal, UpperLimVal))
  
@@ -426,3 +618,151 @@ while vChoice != "0":
     # some unknown choice
     else:
         print("Sorry, but", vChoice, "isn't a valid choice.")
+=======
+            
+            print(integrator(fit, lowerLimVal, UpperLimVal))
+            
+    # choice  5
+    elif vChoice == "5":
+        save()
+        
+   # choice  6
+    elif vChoice == "6":
+        signalIntegral = np.zeros(2)
+        backgroundIntegral = np.zeros(2)
+        signif = np.zeros(1)
+        
+        RealXiDataClone = np.copy(RealXiData)
+        column = int(input("Enter Column Number: "))
+        num = column
+        plot()
+        
+        ##Find where the max value is
+        (counts, bins) = np.histogram(RealXiData[:,column], bins=100)
+        largestBin = bins[np.argmax(counts)] #value of largest bin
+        Binwidth = bins[1] - bins[0]
+        #Min and Max data points
+        Min = np.min(RealXiData[:,column])
+        Max = np.max(RealXiData[:,column])
+        numPoints = 200 # Please Enter an Even Value
+        cutPoints = np.linspace(np.min(RealXiData[:,column]),np.max(RealXiData[:,column]),num=numPoints)   
+        j = 1
+        vType = ""        
+        
+        if column == 2:
+            setBounds = ([1,1.115,0,-5,-30,0,0], [150,1.1175,0.001,10,5,200,500])
+        elif column == 14:
+            setBounds = ([1,-1,0,-5,-30,0,0], [2500,1,5,10,5,200,500])
+        elif column == 15:
+            setBounds = ([1,-1,0,-5,-30,0,0], [1000,1,5,10,5,200,500])
+        elif column == 16:
+            setBounds = ([1,-1,0,-5,-30,0,0], [3000,1,5,10,5,200,500])    
+        
+        #Find if peak close to being at min/max
+        else:
+            #Find If closer to Min or max
+            if abs(Max - largestBin) < abs(largestBin - Min): # Then have a Peak value at Max
+                vType = "Max"
+                print("Max")
+                
+            else:   # Then have a Peak value at Min
+                vType = "Min"
+                print("Min")
+                cutPoints = np.flip(cutPoints) #Allows optomisation via not needing data to be reset
+                
+        if vType != "Max" and vType != "Min":            
+            vType = "Guass"    #Then have a gaussian
+            (fit) = gPlusPolyFit(RealXiData, Bounds = setBounds, Column = column, Bins = 200, Range = None)
+            lowerSigma = fit[1] - 2*fit[2]    
+            upperSigma = fit[1] + 2*fit[2]
+            
+            
+            lowerPoints = np.linspace(np.min(RealXiData[:,column]),lowerSigma,num=int(numPoints/2))
+            HigherPoints = np.flip(np.linspace(upperSigma,np.max(RealXiData[:,column]),num=int(numPoints/2)))
+            
+            cutPoints = np.concatenate((lowerPoints,HigherPoints))
+
+        
+        for i in cutPoints:
+            x = 0
+            if vType == "Max":
+                while x < len(RealXiDataClone):
+                    if RealXiDataClone[x,column] < i:
+                        RealXiDataClone = np.delete(RealXiDataClone, x, 0)
+                    else:
+                        x += 1
+                        
+            elif vType == "Min":
+                while x < len(RealXiDataClone):
+                    if RealXiDataClone[x,column] > i:
+                        RealXiDataClone = np.delete(RealXiDataClone, x, 0)
+                    else:
+                        x += 1
+            else:
+                if i <= lowerPoints[-1]:    
+                    while x < len(RealXiDataClone):
+                        if RealXiDataClone[x,column] < i:
+                            RealXiDataClone = np.delete(RealXiDataClone, x, 0)
+                        else:
+                            x += 1
+                    if i == lowerPoints[-1]:
+                        RealXiDataClone = np.copy(RealXiData)
+                else:    
+                    while x < len(RealXiDataClone):
+                        if RealXiDataClone[x,column] > i:
+                            RealXiDataClone = np.delete(RealXiDataClone, x, 0)
+                        else:
+                            x += 1
+            
+            try:    #Check if Guassian can still be fitted on data set
+                (fit) = noGraphFit(RealXiDataClone, Bins = 300)
+            except RuntimeError:
+                print(j)
+                cutPoints = cutPoints[:j]
+                break
+            
+            peak = integrateSignal(fit)
+            background = integrateBackgroundSig(fit)
+            
+            signalIntegral = np.vstack((signalIntegral, peak))                
+            backgroundIntegral = np.vstack((backgroundIntegral,background))
+            
+            signif = np.vstack((signif,significance(peak[0],background[0])))
+            print(j)
+            j+=1
+            
+        signalIntegral = np.delete(signalIntegral, 0, 0)
+        backgroundIntregral = np.delete(backgroundIntegral, 0, 0)    
+        signif = np.delete(signif, 0)
+        
+        if vType != "Guass":
+            plt.plot(cutPoints, signalIntegral[:,0],label='Signal',color='r',linestyle='--')
+            plt.plot(cutPoints, backgroundIntregral[:,0],label='Background',color='b',linestyle='--')
+            plt.plot(cutPoints, signif,label='Significance',color='g')
+        else:
+            marker = int((numPoints/2)-1)
+            marker2 = int((numPoints/2))
+            plt.plot(cutPoints[:marker], signalIntegral[:marker,0],label='Signal',color='r',linestyle='--')
+            plt.plot(cutPoints[:marker], backgroundIntregral[:marker,0],label='Background',color='b',linestyle='--')
+            plt.plot(cutPoints[:marker], signif[:marker],label='Significance',color='g')
+            
+            plt.xlabel("Cut value of:  "+xAxis[column]) ##Create two grpahs - easier to read
+            plt.ylabel("Integral value")
+            plt.legend()
+            plt.show()            
+            
+            plt.plot(cutPoints[marker2:], signalIntegral[marker2:,0],color='r',linestyle='--')
+            plt.plot(cutPoints[marker2:], backgroundIntregral[marker2:,0],color='b',linestyle='--')
+            plt.plot(cutPoints[marker2:], signif[marker2:],color='g')
+        
+        plt.xlabel("Cut value of:  "+xAxis[column])
+        plt.ylabel("Integral value")
+        plt.legend()
+        plt.show()
+        plt.pause(30)
+        
+    # some unknown choice
+    else:
+        print("Sorry, but", vChoice, "isn't a valid choice.")
+        
+>>>>>>> 8b54608e5ef6b1386ac36c6bca203bb3d97c1ff3
