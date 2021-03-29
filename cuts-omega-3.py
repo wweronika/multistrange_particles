@@ -11,52 +11,52 @@ def ximass_far(columns):
 #   return not (omegamass_low(columns) and not nsigproton_correct(columns))
 
 def ximass_correct(columns):
-    return not (columns[2] > 1.315 and columns[2] < 1.34) and columns[2] <1.50
+    return not (columns[2] > 1.315 and columns[2] < 1.34) and columns[2] <1.51 and columns[2] > 1.25
 def vmass_correct(columns):
-  return columns[3] > 1.11 and columns[3] < 1.125
+  return columns[3] > 1.1125 and columns[3] < 1.1195
 
 def v0radius_correct(columns):
-  return columns[4] > 0 and columns[4] < 55
+  return  columns[4] < 30
 
 def casradius_correct(columns):
-  return columns[5] < 20 and columns[5] > 0.5
+  return columns[5] < 14 
 
 def cascos_correct(columns):
-  return columns[6] > 0.995
+  return columns[6] > 0.998
 
 def v0cos_correct(columns):
-  return columns[7] > 0.99
+  return columns[7] > 0.992
 
 def dcaneg_correct(columns):
-  return columns[8] > 0.02  and columns[8] < 10
+  return columns[8] < 10
 
 def dcapos_correct(columns):
-  return columns[9] > 0.02 and columns[9] < 2
+  return columns[9] < 1
 
 def dcabach_correct(columns):
-  return columns[10] < 4 and columns[10] > 0.05
+  return columns[10] < 3 and columns[10] > 0.045
 
 def dcav0_correct(columns):
-  return columns[11] > 0.01 and columns[11] < 0.9
+  return columns[11] < 0.8
 
 def dcacas_correct(columns):
-  return columns[12] < 0.5
+  return columns[12] < 0.4
 
 def dcav0pv_correct(columns):
-  return columns[13] < 2
+  return columns[13] < 1.15
 
 def doverm_correct(columns):
-  return columns[14] < 8
+  return columns[14] < 5
 
 
 def nsigpion_correct(columns):
-  return columns[15] > -2 and columns[15] < 4
+  return columns[15] > -3.5 and columns[15] < 2.4
 
 def nsigproton_correct(columns):
-  return columns[16] > -2 and columns[16] < 3
+  return columns[16] > -2.4 and columns[16] < 2.35
 
 def nsigbach_correct(columns):
-  return columns[17] > -8 and columns[17] < 8
+  return columns[17] > -4 and columns[17] < 4.2
 
 
 parameter_checks = [ximass_correct, vmass_correct, v0radius_correct, casradius_correct, cascos_correct, v0cos_correct, dcaneg_correct, dcapos_correct, dcabach_correct, dcav0_correct, dcacas_correct, dcav0pv_correct, doverm_correct, nsigpion_correct, nsigproton_correct, nsigbach_correct]
@@ -111,7 +111,7 @@ def show_plot(property):
 # Read original file and save to output file if the checks are correct
 
 f_in= open('real-Omega-data.file', 'r')
-f_out = open('cut_low_mass_omega_real.file', 'w')
+f_out = open('final_cut_omega.file', 'w')
 
 n_lines = 0
 
@@ -128,7 +128,7 @@ f_out.close()
 
 # Read cut file and plot data
 
-f_in_2 = open("cut_low_mass_omega_real.file", "r")
+f_in_2 = open("final_cut_omega.file", "r")
 
 omegamass = []
 data = [[] for i in range(18)]

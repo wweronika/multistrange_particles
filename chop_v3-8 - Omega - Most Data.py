@@ -479,8 +479,8 @@ def histogram2d():
     plt.show()
  
 print("Please wait, this may take a while...")
-MCXiData = fileHandler(r'C:\root_v5.34.38\MC-Omega-data.file') #Enter you file path for the Monte Carlo Data file!
-RealXiData = fileHandler(r'C:\root_v5.34.38\Real-Omega-data.file') #Enter you file path for the real Data file!
+MCXiData = fileHandler(r'MC-Omega-data.file') #Enter you file path for the Monte Carlo Data file!
+RealXiData = fileHandler(r'Real-Omega-data.file') #Enter you file path for the real Data file!
 presetCuts() ##Comment out if you want to handle Original Data
 
 ###Main Code        
