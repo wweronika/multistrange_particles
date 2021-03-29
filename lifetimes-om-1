@@ -1,0 +1,100 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Mar  8 11:33:06 2021
+
+@author: tastu
+"""
+
+import numpy as np
+from numpy import exp      # import the exp func for the Gauss fit
+import matplotlib.pyplot as plt
+from matplotlib import colors
+norm = colors.LogNorm()
+from scipy.optimize import curve_fit
+from scipy import asarray as ar,exp
+#Evans code, I edited to get exp fit
+# define functions
+
+def mygauss(x,a,mean,sigma):
+    return a*2.71828**(-(x-mean)**2/(2*sigma**2))
+
+def myline(x,m,c):
+    return m*x+c
+
+def poly2D(t,A,B,C):
+    return A*t**2+B*t+C
+
+def gplusline(x,a,mean,sigma,m,c):
+     return a*np.exp(-(x-mean)**2/(2*sigma**2))+m*x+c
+ #exponential function
+def expFit(x,A,t,C):
+     return A *exp(-x/t) + C #assumes no offset
+ 
+ #new exponential function with better fitting
+def expFitnew(x,A,B,t1,t2):
+     return A*exp(-x/t1)+B*exp(-x/t2) #assumes no offset
+ 
+
+# f = open('MC-xi-data.file', 'r')
+     #final_cut_omega.file
+f = open(r'C:\Users\tastu\Omega_finall.file', 'r')
+
+ximass, v0mass, v0radius, dOverM, Ommass = [], [], [], [], []
+for line in f:
+    line = line.strip()
+    columns = [float(s) for s in line.split()]
+    
+    ximass.append(columns[2])
+    v0mass.append(columns[3])
+    v0radius.append(columns[4])
+    dOverM.append(columns[14])
+    Ommass.append(columns[1]) #added in dOverM, col 14
+
+#calculates the gradient of column 13 to deduce the distance xi travels before decaying
+def gradient():
+   #(calculated using mean lifetime on wiki)
+    actual_distance_omega = 8.21e-11 * 3e10
+    #lifetime * speed of light
+    
+    return 'The distance travelled before decaying by Omega, in cm(MC data) =', actual_distance_omega
+f.close()
+
+# plot histogram returning the number of bins and entries (Nhits) in each
+
+# note I had to limit the range of the histogram to get a fit (python is rubbish!)
+#the range has changed to accomodate column 14 only
+
+x_axis_om = [element * 1.671 for element in dOverM] 
+#dOverM * 1.32171 #rest mass of Omega is 1672.00 MeV
+#range [4,15] works best,
+#3.5, 18 fr real omega data
+#gives 2.427 with error 1.61e-1
+(nHits, bins, patches)=plt.hist(x_axis_om, bins = 100, range = [4,15],color='c')
+x = bins[:-1]
+y = nHits
+
+# set initial values for fit (otherwise you may not get a good fit)
+#
+init_vals = [100, 5, 1]  
+# fit data setting the initial values and min and max (bounds) values of the parameters being fitted 
+#altered the upper and lower bounds for new set of constants and parameters.
+# bounds 600, 8 looks good but the value of t is too low.
+popt,pcov = curve_fit(expFit, x, y, p0=init_vals, bounds=([0, 0, 0], [1000, 10, 1]))
+curve_fit0_TR = expFit(x,*popt)
+#plot the fitted curve 
+
+plt.plot(x,curve_fit0_TR,label='Fitting Curve',color='r',linestyle='--')
+print(popt)
+print(pcov)
+
+plt.title('dOverM plot for Omega')
+plt.xlabel('mL/p in cm')
+plt.ylabel('No. of Events')
+plt.legend()
+plt.savefig('MCommass.pdf')
+plt.show()
+#plt.hist2d(ximass, v0radius, bins = 100)
+#plt.show()
+#checking to see gradient function works fine
+print(gradient())
+#print(np.max(ximass))
